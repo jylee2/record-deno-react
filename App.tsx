@@ -1,47 +1,28 @@
 import { React } from './deps.ts'
-import { ReactDOM } from './deps.ts'
+import BrowserRouter from "https://jspm.dev/react-dom@17.0.0"
+// import { BrowserRouter, Route } from './deps.ts'
 
 import Records from './src/components/Records/index.tsx'
 
 // @ts-ignore
-const { BrowserRouter, Router } = ReactDOM
+// const { BrowserRouter, Route } = ReactDOM
 
 const App = () => {
+  const renderCount = React.useRef(1)
 
-  // const [name, setName] = React.useState('')
+  React.useEffect(() => {
+    renderCount.current += 1
+  })
 
-  // React.useEffect(() => {
-  //   (
-  //     async () => {
-  //       try {
-  //         const response = await fetch(`${config.baseUrl}/graphql`, {
-  //           headers: {'Content-Type': 'application/json'},
-  //           credentials: 'include'
-  //         })
-
-  //         const content = await response.json()
-  //         console.log('----------Home content', content)
-  //         setName(content.name)
-  //       } catch (error) {
-  //         console.log('----------Home user error', error)
-  //         return null
-  //       }
-  //     }
-  //   )()
-  // })
+  console.log('--------App renderCount.current', renderCount.current)
 
   return (
-    <div className="App">
-      <Records />
-      {/* <BrowserRouter> */}
-        {/* <Nav name={name} setName={setName} />
-        <main className="form-signin">
-            <Route path="/" exact component={() => <Home name={name} />} />
-            <Route path="/login" component={() => <Login name={name} setName={setName} />} />
-            <Route path="/register" component={Register} />
-        </main> */}
-      {/* </BrowserRouter> */}
-    </div>
+    // @ts-ignore
+    // <BrowserRouter>
+      <div className="App">
+        <Records />
+      </div>
+    // </BrowserRouter>
   )
 }
 

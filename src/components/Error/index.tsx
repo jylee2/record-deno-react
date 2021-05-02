@@ -1,6 +1,6 @@
 import { React } from '../../../deps.ts'
 
-const ErrorSpan = (props:any) => {
+const Error = (props:any) => {
   const { errorMsg } = props
 
   return (
@@ -10,4 +10,4 @@ const ErrorSpan = (props:any) => {
   )
 }
 
-export default ErrorSpan
+export default Error
