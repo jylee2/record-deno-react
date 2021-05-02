@@ -21250,7 +21250,11 @@ const gqlFetch = async (queryObj)=>{
         return error7;
     }
 };
-const ErrorSpan = (props)=>{
+const Loading = (props)=>{
+    const { loading  } = props;
+    return react.createElement("span", null, loading);
+};
+const Error1 = (props)=>{
     const { errorMsg  } = props;
     return react.createElement("span", {
         style: {
@@ -21263,13 +21267,17 @@ const Record = (props)=>{
     return react.createElement("div", null, rec.url);
 };
 const Records = (props)=>{
-    const [records, setRecords] = react.useState([]);
+    const [loading, setLoading] = react.useState('');
     const [error7, setError] = react.useState('');
+    const [records, setRecords] = react.useState([]);
     react.useEffect(async ()=>{
         const queryObj = {
             query: getRecordsGql
         };
         const recordRes = await gqlFetch(queryObj);
+        if (recordRes?.loading) {
+            setLoading(recordRes?.loading);
+        }
         if (recordRes?.errors?.length) {
             setError(recordRes?.errors[0]?.message);
         }
@@ -21277,10 +21285,11 @@ const Records = (props)=>{
             setRecords(recordRes?.data?.getRecords);
         }
     }, []);
-    return react.createElement("div", null, error7 && react.createElement(ErrorSpan, {
+    return react.createElement("div", null, loading && react.createElement(Loading, {
+        loading: loading
+    }), error7 && react.createElement(Error1, {
         errorMsg: error7
     }), records?.map((rec)=>{
-        console.log('--------rec', rec);
         return react.createElement(Record, {
             key: rec.id,
             rec: rec
@@ -21288,6 +21297,11 @@ const Records = (props)=>{
     }));
 };
 const App = ()=>{
+    const renderCount = react.useRef(1);
+    react.useEffect(()=>{
+        renderCount.current += 1;
+    });
+    console.log('--------App renderCount.current', renderCount.current);
     return react.createElement("div", {
         className: "App"
     }, react.createElement(Records, null));
