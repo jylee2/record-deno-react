@@ -1,9 +1,9 @@
 import { React } from '../../../deps.ts'
 
-import { getRecordsGql } from './schema.ts'
-import { gqlFetch } from '../../utils/recordsHelper.ts'
+import { queryRecordsGql } from '../../graphql/index.ts'
+import { gqlFetch } from '../../utils/helper.ts'
 import Loading from '../Loading/index.tsx'
-import Error from '../Error/index.tsx'
+import ErrorDisplayer from '../Error/index.tsx'
 import Record from './Record/index.tsx'
 
 const Records = (props:any) => {
@@ -13,7 +13,7 @@ const Records = (props:any) => {
   
   React.useEffect(async () => {
     const queryObj = {
-      query: getRecordsGql
+      query: queryRecordsGql
     }
 
     const recordRes = await gqlFetch(queryObj)
@@ -28,6 +28,7 @@ const Records = (props:any) => {
 
     if (recordRes?.data?.getRecords?.length) {
       setRecords(recordRes?.data?.getRecords)
+      setError('')
     }
     
     // console.log('--------recordRes', recordRes)
@@ -41,7 +42,7 @@ const Records = (props:any) => {
       }
       {
         error &&
-        <Error errorMsg={error} />
+        <ErrorDisplayer errorMsg={error} />
       }
       {
         records?.map((rec:any) => {

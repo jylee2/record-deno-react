@@ -1,6 +1,10 @@
 import { React } from '../../../deps.ts'
 
-const Error = (props:any) => {
+type ErrorDisplayerType = {
+  errorMsg: string
+}
+
+const ErrorDisplayer = (props:ErrorDisplayerType) => {
   const { errorMsg } = props
 
   return (
@@ -10,4 +14,4 @@ const Error = (props:any) => {
   )
 }
 
-export default Error
+export default ErrorDisplayer

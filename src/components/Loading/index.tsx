@@ -1,11 +1,18 @@
 import { React } from '../../../deps.ts'
 
-const Loading = (props:any) => {
+type LoadingType = {
+  loading: boolean
+}
+
+const Loading = (props:LoadingType) => {
   const { loading } = props
 
   return (
     <span>
-      {loading}
+      {
+        loading &&
+        <span>Loading...</span>
+      }
     </span>
   )
 }
