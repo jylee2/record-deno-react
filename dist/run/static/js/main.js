@@ -21227,7 +21227,6 @@ const mod1 = function() {
 }();
 const { default: any , ...rest } = mod;
 const react = mod.default;
-const getRecordsGql = `\n  query getRecords1 {\n    getRecords{\n      id\n      createdAt\n      description\n      status\n      updatedAt\n      url\n      userId\n      username\n    }\n  }\n`;
 const config = {
     graphqlUrl: 'http://localhost:8080/graphql'
 };
@@ -21250,17 +21249,68 @@ const gqlFetch = async (queryObj)=>{
         return error7;
     }
 };
-const Loading = (props)=>{
-    const { loading  } = props;
-    return react.createElement("span", null, loading);
-};
-const Error1 = (props)=>{
+const ErrorDisplayer = (props)=>{
     const { errorMsg  } = props;
     return react.createElement("span", {
         style: {
             color: 'red'
         }
     }, errorMsg);
+};
+const queryRecordsGql = `\n  query getRecords1 {\n    getRecords{\n      id\n      createdAt\n      description\n      status\n      updatedAt\n      url\n      userId\n      username\n    }\n  }\n`;
+const mutationLoginGql = `\n  mutation ($input: LoginUserInput) {\n    loginUser (input: $input) {\n      id\n      authToken\n      createdAt\n      email\n      username\n    }\n  }\n`;
+const LoginForm = (props)=>{
+    const { setAuthToken  } = props;
+    const [username, setUsername] = react.useState('');
+    const [password, setPassword] = react.useState('');
+    const [loginError, setLoginError] = react.useState('');
+    const submitForm = async (e)=>{
+        e.preventDefault();
+        const queryObj = {
+            query: mutationLoginGql,
+            variables: {
+                input: {
+                    password: password,
+                    username: username
+                }
+            }
+        };
+        console.log('--------queryObj', queryObj);
+        const user = await gqlFetch(queryObj);
+        console.log('--------user', user);
+        if (user?.errors?.length) {
+            setLoginError(user?.errors[0]?.message);
+        }
+        if (user?.data?.loginUser?.authToken) {
+            setAuthToken(user?.data?.loginUser?.authToken);
+            setLoginError('');
+        }
+    };
+    return react.createElement("div", null, react.createElement("form", {
+        onSubmit: submitForm
+    }, react.createElement("h1", {
+        className: "h3 mb-3 fw-normal"
+    }, "Login"), react.createElement("input", {
+        className: "form-control",
+        placeholder: "Enter username...",
+        required: true,
+        onChange: (e)=>setUsername(e.target.value)
+    }), react.createElement("input", {
+        type: "password",
+        className: "form-control",
+        placeholder: "Enter password...",
+        required: true,
+        onChange: (e)=>setPassword(e.target.value)
+    }), react.createElement("button", {
+        className: "w-100 btn btn-lg btn-primary",
+        type: "submit"
+    }, "Login")), loginError && react.createElement(ErrorDisplayer, {
+        errorMsg: loginError
+    }));
+};
+const Loading = (props)=>{
+    const { loading  } = props;
+    return react.createElement("span", null, loading && react.createElement("span", null, "Loading..."));
 };
 const Record = (props)=>{
     const { rec  } = props;
@@ -21272,7 +21322,7 @@ const Records = (props)=>{
     const [records, setRecords] = react.useState([]);
     react.useEffect(async ()=>{
         const queryObj = {
-            query: getRecordsGql
+            query: queryRecordsGql
         };
         const recordRes = await gqlFetch(queryObj);
         if (recordRes?.loading) {
@@ -21283,11 +21333,12 @@ const Records = (props)=>{
         }
         if (recordRes?.data?.getRecords?.length) {
             setRecords(recordRes?.data?.getRecords);
+            setError('');
         }
     }, []);
     return react.createElement("div", null, loading && react.createElement(Loading, {
         loading: loading
-    }), error7 && react.createElement(Error1, {
+    }), error7 && react.createElement(ErrorDisplayer, {
         errorMsg: error7
     }), records?.map((rec)=>{
         return react.createElement(Record, {
@@ -21295,6 +21346,15 @@ const Records = (props)=>{
             rec: rec
         });
     }));
+};
+const Login = ()=>{
+    const [authToken, setAuthToken] = react.useState('');
+    console.log('--------authToken', authToken);
+    return react.createElement("div", {
+        className: "login-modal"
+    }, !authToken && react.createElement(LoginForm, {
+        setAuthToken: setAuthToken
+    }), authToken && react.createElement(Records, null));
 };
 const App = ()=>{
     const renderCount = react.useRef(1);
@@ -21304,6 +21364,6 @@ const App = ()=>{
     console.log('--------App renderCount.current', renderCount.current);
     return react.createElement("div", {
         className: "App"
-    }, react.createElement(Records, null));
+    }, react.createElement(Login, null));
 };
 mod1.render(react.createElement(rest.StrictMode, null, react.createElement(App, null)), document.getElementById('root'));
